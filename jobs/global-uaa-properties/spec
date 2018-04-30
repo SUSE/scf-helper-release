@@ -1,0 +1,15 @@
+---
+name: global-uaa-properties
+description: Dummy BOSH job used to host global parameters that are required to configure SCF / fissile
+
+packages: []
+
+properties:
+  fissile.monit.password:
+    description: "Password used for the monit API"
+
+  fissile.monit.port:
+    description: "Port used for the monit API"
+
+  fissile.monit.user:
+    description: "Username for the monit API"
