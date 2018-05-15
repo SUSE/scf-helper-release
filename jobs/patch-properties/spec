@@ -22,3 +22,17 @@ properties:
   routing_api.port:
     description: "Port on which Routing API is running."
     default: 3000
+
+  cfdot.bbs.hostname:
+    description: "Hostname of the BBS service."
+    default: "bbs.service.cf.internal"
+  cfdot.bbs.port:
+    description: "Port of the BBS service."
+    default: 8889
+
+  cfdot.locket.hostname:
+    description: "Hostname at which to discover the Locket API server."
+    default: "locket.service.cf.internal"
+  cfdot.locket.port:
+    description: "Port of the Locket API server."
+    default: 8891
