@@ -10,5 +10,16 @@ templates:
   run.erb: bin/run
 
 properties:
-  scf.secrets.variables:
-    description: "A dummy variable to hold references to all config variables needed for secrets generation"
+  scf.secrets.domain:
+    description: "Base domain of the cluster."
+  scf.secrets.namespace:
+    description: "Kubernetes namespace this job is deployed to."
+  scf.secrets.service_domain_suffix:
+    description: "Kubernetes-internal service domain suffix."
+  scf.secrets.name:
+    description: "Secrets generation name."
+  scf.secrets.generation:
+    description: "Secrets generation counter."
+  scf.secrets.cert_expiration:
+    description: "Expiration of generated certificates (in days)"
+    default: 10950

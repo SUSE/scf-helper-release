@@ -6,4 +6,11 @@ set -x
 export PATH="/var/vcap/packages/cli/bin:${PATH}"
 export PATH="/var/vcap/packages/generate-secrets/bin:${PATH}"
 
-scf-secret-generator /var/vcap/packages/generate-secrets/role-manifest.yml
+scf-secret-generator \
+    -certExpiration "<%= p('scf.secrets.cert_expiration') %>" \
+    -domain "<%= p('scf.secrets.domain') %>" \
+    -namespace "<%= p('scf.secrets.namespace') %>" \
+    -serviceDomainSuffix "<%= p('scf.secrets.service_domain_suffix') %>" \
+    -secretsName "<%= p('scf.secrets.name') %>" \
+    -secretsGeneration "<%= p('scf.secrets.generation') %>" \
+    /var/vcap/packages/generate-secrets/role-manifest.yml
