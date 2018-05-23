@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -o errexit
-set -x
-
-export PATH="/var/vcap/packages/generate-secrets/bin:${PATH}"
-
-scf-secret-generator /var/vcap/packages/generate-secrets/role-manifest.yml
