@@ -8,6 +8,7 @@ export PATH="/var/vcap/packages/generate-secrets/bin:${PATH}"
 scf-secret-generator \
     -certExpiration "<%= p('scf.secrets.cert_expiration') %>" \
     -domain "<%= p('scf.secrets.domain') %>" \
+    -isInstall="<%= p('scf.secrets.is_install') %>" \
     -namespace "<%= p('scf.secrets.namespace') %>" \
     -serviceDomainSuffix "<%= p('scf.secrets.service_domain_suffix') %>" \
     -secretsName "<%= p('scf.secrets.name') %>" \

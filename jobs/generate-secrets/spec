@@ -23,3 +23,6 @@ properties:
   scf.secrets.cert_expiration:
     description: "Expiration of generated certificates (in days)"
     default: 10950
+  scf.secrets.is_install:
+    description: Set to true for initial install or false during upgrades
+    default: false
