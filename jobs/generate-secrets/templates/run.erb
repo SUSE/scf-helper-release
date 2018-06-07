@@ -5,12 +5,20 @@ set -x
 
 export PATH="/var/vcap/packages/generate-secrets/bin:${PATH}"
 
+<%
+if p('scf.secrets.is_install')
+  install_or_upgrade = 'install'
+else
+  install_or_upgrade = 'upgrade'
+end
+%>
+
 scf-secret-generator \
     -certExpiration "<%= p('scf.secrets.cert_expiration') %>" \
+    -clusterDomain "<%= p('scf.secrets.cluster_domain') %>" \
     -domain "<%= p('scf.secrets.domain') %>" \
-    -isInstall="<%= p('scf.secrets.is_install') %>" \
+    -mode="<%= install_or_upgrade %>" \
     -namespace "<%= p('scf.secrets.namespace') %>" \
-    -serviceDomainSuffix "<%= p('scf.secrets.service_domain_suffix') %>" \
     -secretsName "<%= p('scf.secrets.name') %>" \
     -secretsGeneration "<%= p('scf.secrets.generation') %>" \
     /var/vcap/packages/generate-secrets/role-manifest.yml
