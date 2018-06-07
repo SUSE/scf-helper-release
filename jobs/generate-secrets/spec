@@ -14,8 +14,9 @@ properties:
     description: "Base domain of the cluster."
   scf.secrets.namespace:
     description: "Kubernetes namespace this job is deployed to."
-  scf.secrets.service_domain_suffix:
-    description: "Kubernetes-internal service domain suffix."
+  scf.secrets.cluster_domain:
+    description: "Kubernetes cluster domain."
+    default: cluster.local
   scf.secrets.name:
     description: "Secrets generation name."
   scf.secrets.generation:
@@ -23,3 +24,6 @@ properties:
   scf.secrets.cert_expiration:
     description: "Expiration of generated certificates (in days)"
     default: 10950
+  scf.secrets.is_install:
+    description: Set to true for initial install or false during upgrades
+    default: false
