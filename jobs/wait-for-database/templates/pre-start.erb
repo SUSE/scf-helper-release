@@ -1,0 +1,76 @@
+#!/bin/bash -e
+# This script waits for the database to be ready
+
+# Report progress to the user; use as printf
+status() {
+    local fmt="${1}"
+    shift
+    printf "\n%b${fmt}%b\n" "\033[0;32m" "$@" "\033[0m"
+}
+
+# Report problem to the user; use as printf
+trouble() {
+    local fmt="${1}"
+    shift
+    printf "\n%b${fmt}%b\n" "\033[0;31m" "$@" "\033[0m"
+}
+
+# helper function to retry a command several times, with a delay between trials
+# usage: retry <max-tries> <delay> <command>...
+function retry () {
+    max=${1}
+    delay=${2}
+    i=0
+    shift 2
+
+    while test ${i} -lt ${max} ; do
+        printf "Trying: %s\n" "$*"
+        if "$@" ; then
+            status ' SUCCESS'
+            return
+        fi
+        trouble '  FAILED'
+        status "Waiting ${delay} ..."
+        sleep "${delay}"
+        i="$(expr ${i} + 1)"
+    done
+    trouble 'Giving up'
+}
+
+<%
+host = nil
+port = nil
+
+if_p('wait-for-database.hostname') do |h|
+    host = h
+end
+
+if_p('wait-for-database.port') do |p|
+    port = p
+end
+
+if_link('database') do |db_link|
+    host ||= db_link.instances.first.address
+    port ||= db_link.p('database.port')
+end
+
+def complain(prop)
+    raise ArgumentError, "Required database #{prop} configuration not specified.
+        Please specify wait-for-database.#{prop} or check for bosh linked
+        database configuration.".lines.map(&:chomp).join(' ').squeeze
+end
+
+complain 'hostname' if host.nil?
+complain 'port' if port.nil?
+%>
+
+status "Waiting for database <%= host %>:<%= port %>..."
+# We don't actually know if this is MySQL or PostgreSQL; just look for a listening socket.
+# In case there's a (malfunctioning) proxy in between, we'll attempt to read a byte.
+detect() {
+    bytes="$(head --bytes=1 2>/dev/null <"/dev/tcp/${1}/${2}" | wc --bytes)"
+    return $(( 1 - ${bytes} ))
+}
+retry 360 30s detect <%= host %> <%= port %>
+
+exit 0
