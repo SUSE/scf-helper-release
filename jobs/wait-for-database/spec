@@ -1,0 +1,23 @@
+---
+name: wait-for-database
+
+description: >
+  This is a pre-start job to delay starting the rest of the role until a
+  database connection is ready.  Currently it only checks that a response can
+  be obtained from the server, and not that it responds intelligently.
+
+templates:
+  pre-start.erb: bin/pre-start
+
+consumes:
+- name: database
+  type: database
+  optional: true
+
+properties:
+  wait-for-database.hostname:
+    description: >
+      The host name of the database to wait for.  If not set, this will be
+      looked up via a `database` BOSH link instead.
+  wait-for-database.port:
+    description: The port of the database to wait for.
