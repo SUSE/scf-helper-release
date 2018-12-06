@@ -21,4 +21,4 @@ scf-secret-generator \
     -namespace "<%= p('scf.secrets.namespace') %>" \
     -secretsName "<%= p('scf.secrets.name') %>" \
     -secretsGeneration "<%= p('scf.secrets.generation') %>" \
-    /var/vcap/packages/generate-secrets/role-manifest.yml
+    "<%= p('scf.manifest_path') >"

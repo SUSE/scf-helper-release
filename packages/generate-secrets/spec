@@ -5,4 +5,3 @@ dependencies:
 
 files:
 - github.com/SUSE/scf-secret-generator/**/*
-- role-manifest.yml

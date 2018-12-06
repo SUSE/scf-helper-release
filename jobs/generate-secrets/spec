@@ -27,3 +27,6 @@ properties:
   scf.secrets.is_install:
     description: Set to true for initial install or false during upgrades
     default: false
+  scf.manifest_path:
+    description: Absolute path of the manifest that contains definitions on how to generate secrets
+    default: /opt/fissile/manifest.yaml
