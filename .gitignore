@@ -7,4 +7,4 @@ config/dev.yml
 dev_releases
 releases/*.tgz
 releases/**/*.tgz
-src/role-manifest.yml
+config/private.yml
