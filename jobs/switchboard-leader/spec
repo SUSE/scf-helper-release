@@ -1,0 +1,19 @@
+---
+name: switchboard-leader
+description: Job to host the a/p probe for mysql switchboard and leader election
+
+templates:
+  readiness-switchboard.sh: bin/readiness/switchboard
+
+packages:
+  - kubectl
+
+properties:
+
+  gp.switchboard.service:
+    description: Name of the service to work on for a/p leader election.
+    default: mysql-proxy-proxy
+
+  gp.switchboard.renewal:
+    description: Interval in seconds within which the claim has to be renewed to be kept leader.
+    default: 15
