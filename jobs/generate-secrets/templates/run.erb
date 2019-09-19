@@ -14,6 +14,7 @@ end
 %>
 
 scf-secret-generator \
+    -autoApproval="<%= p('scf.secrets.auto_approval') %>" \
     -certExpiration "<%= p('scf.secrets.cert_expiration') %>" \
     -clusterDomain "<%= p('scf.secrets.cluster_domain') %>" \
     -domain "<%= p('scf.secrets.domain') %>" \
@@ -21,4 +22,6 @@ scf-secret-generator \
     -namespace "<%= p('scf.secrets.namespace') %>" \
     -secretsName "<%= p('scf.secrets.name') %>" \
     -secretsGeneration "<%= p('scf.secrets.generation') %>" \
+<% p('scf.secrets.env', []).each do |var| %>    -set <%= var %> \
+<% end %>    \
     "<%= p('scf.manifest_path') %>"
