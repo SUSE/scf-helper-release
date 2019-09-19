@@ -11,7 +11,7 @@ A=skiff-leader
 # Clear log.
 rm /tmp/log-ready-switchboard
 
-log () { echo "$@" >> /tmp/log-ready-switchboard }
+log () { echo "$@" >> /tmp/log-ready-switchboard ; }
 
 now () {
     # timestamp, seconds of the epoch.
