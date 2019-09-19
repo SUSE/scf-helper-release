@@ -7,11 +7,12 @@ H="${HOSTNAME}"
 S="<%= p('gp.switchboard.service') %>"
 D="<%= p('gp.switchboard.renewal') %>"
 A=skiff-leader
+L=/tmp/log-ready-switchboard
 
 # Clear log.
-rm /tmp/log-ready-switchboard
+rm $L
 
-log () { echo "$@" >> /tmp/log-ready-switchboard ; }
+log () { echo "$@" >> $L ; }
 
 now () {
     # timestamp, seconds of the epoch.
@@ -42,18 +43,18 @@ is_expired () {
 make_claim () {
     C=${H}:$(now)
     log make first claim $C
-    $K annotate service -n $N $S $A=$C
+    $K annotate service -n $N $S $A=$C >> $L 2>&1
 }
 
 extend_claim () {
     C=${H}:$(now)
     log extend claim $C
-    $K annotate --overwrite service -n $N $S $A=$C
+    $K annotate --overwrite service -n $N $S $A=$C >> $L 2>&1
 }
 
 clear_claims() {
     log clear expired claim
-    $K annotate service -n $N $S ${A}-
+    $K annotate service -n $N $S ${A}- >> $L 2>&1
 }
 
 claim () {
