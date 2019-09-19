@@ -10,6 +10,8 @@ templates:
   run.erb: bin/run
 
 properties:
+  scf.secrets.auto_approval:
+    description: "Attempt to auto-approve kube certificate signing requests."
   scf.secrets.domain:
     description: "Base domain of the cluster."
   scf.secrets.namespace:
@@ -17,6 +19,8 @@ properties:
   scf.secrets.cluster_domain:
     description: "Kubernetes cluster domain."
     default: cluster.local
+  scf.secrets.env:
+    description: A list of key=value pairs for template expansion.
   scf.secrets.name:
     description: "Secrets generation name."
   scf.secrets.generation:
