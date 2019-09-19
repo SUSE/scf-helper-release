@@ -1,0 +1,47 @@
+name: scf-helper
+version: 1.0.4
+commit_hash: 3191fef
+uncommitted_changes: false
+jobs:
+- name: generate-secrets
+  version: 82d0c6c639f1203de6b5092ec0280d74aa12b598c1a02e82e0f4962b324dae32
+  fingerprint: 82d0c6c639f1203de6b5092ec0280d74aa12b598c1a02e82e0f4962b324dae32
+  sha1: sha256:2420951be64adbc8ca716901d07119e801aa25cdbebd6bec6f8bcbd6a49d222e
+  packages:
+  - generate-secrets
+- name: global-properties
+  version: 8fd4843cbffb637f30e8454c932893e4a03fd99d9f4b6f38779fa8e83508f8c5
+  fingerprint: 8fd4843cbffb637f30e8454c932893e4a03fd99d9f4b6f38779fa8e83508f8c5
+  sha1: sha256:a23041029b2389c90a2ea6e67f9dd8790c21c1c5b2f7b5e1014e78302064ed32
+  packages: []
+- name: global-uaa-properties
+  version: 8b0e9b79925bf98438fea8853e62d781a226a14db835dbee00c1cd0c6bbb7917
+  fingerprint: 8b0e9b79925bf98438fea8853e62d781a226a14db835dbee00c1cd0c6bbb7917
+  sha1: sha256:be3dd5fd8e41361b2a2af43e89cb0b7dbb1ad706d47c14477145c302654295d1
+  packages: []
+- name: patch-properties
+  version: 61c6024993a2813b5dd86566d563523d9a6396acea88add46a97981003c25d36
+  fingerprint: 61c6024993a2813b5dd86566d563523d9a6396acea88add46a97981003c25d36
+  sha1: sha256:5bebf7baa7a8be29f86746fe55a4a809040edcd0e6850b54ea3aa003ff2e3a43
+  packages: []
+- name: wait-for-database
+  version: f9c9ed4559733fbfd7f69e1c0f65c290995bf9c34dccb8a22d03af8ebd0b791f
+  fingerprint: f9c9ed4559733fbfd7f69e1c0f65c290995bf9c34dccb8a22d03af8ebd0b791f
+  sha1: sha256:3a904f97c16975990f8bfd2995a5338b14498b199fc7bac95b76eec2afa43d98
+  packages: []
+packages:
+- name: generate-secrets
+  version: f8623487b056978898d3022423ad4e0c2c3468320140c0111d2c441d010e810a
+  fingerprint: f8623487b056978898d3022423ad4e0c2c3468320140c0111d2c441d010e810a
+  sha1: sha256:9144620127b645f71905e259f25d30d0405c5ee29f4c049f76c96ef8cef45d07
+  dependencies:
+  - golang1.11.1
+- name: golang1.11.1
+  version: 7732c582917237d27151a5c99d75351dcd8f8c9cc9408fcf95f3584ed62a1423
+  fingerprint: 7732c582917237d27151a5c99d75351dcd8f8c9cc9408fcf95f3584ed62a1423
+  sha1: sha256:8410eb8bdafde432cd42a948885044095669c74c40de35e952691256d4012051
+  dependencies: []
+license:
+  version: a1027b2d777510b701ae31575278dd55e0ccac5cf70e737b7ba7058235febbe0
+  fingerprint: a1027b2d777510b701ae31575278dd55e0ccac5cf70e737b7ba7058235febbe0
+  sha1: sha256:bcab94e699cf350cb6891bafc419cc98e565921571afec0b6c396ecff6e77f21
