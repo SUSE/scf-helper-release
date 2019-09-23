@@ -12,6 +12,7 @@ templates:
 properties:
   scf.secrets.auto_approval:
     description: "Attempt to auto-approve kube certificate signing requests."
+    default: false
   scf.secrets.domain:
     description: "Base domain of the cluster."
   scf.secrets.namespace:
