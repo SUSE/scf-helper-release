@@ -2,9 +2,6 @@
 name: database-seeder
 description: >
   When using an external database server, seed it with the necessary databases.
-  This is done during pre-start. The run operation is present only to satisfy
-  parts of the system expecting an actual task. Which does nothing, except to
-  exist, to be called.
 
 templates:
   pre-start.erb: bin/pre-start
