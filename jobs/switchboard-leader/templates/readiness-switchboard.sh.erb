@@ -1,5 +1,38 @@
 #!/bin/sh
 # Readiness probe script for the mysql-proxy role
+# - - -- --- ----- -------- ------------- ---------------------
+
+# We use an annotation on the service to manage the leader election.
+# The main point here is that without `--overwrite` a `kube annotate`
+# will fail if the annotation is already set.
+#
+# This automatically gives us the main property needed, that only a
+# single pod among the set can make a successful claim.
+#
+# To handle the case of the leader pod failing the leader has to
+# refresh its claim periodically. Instead of running our own loop or
+# thread for that we make use of kube invoking this probe periodically
+# already. We expect the configured renewal interval to be large
+# enough that the leader can refresh its claim without contest even
+# when the calling the probe is delayed somewhat.
+
+# Now, when one of the other pods detects that the leader's claim has
+# indeed expired it wipes out that claim and then immediately tries to
+# claim things for itself. To guard against a severely delayed leader
+# running this over with its renewed claim a second check is made for
+# having achieved leadership.
+
+# All this logic is found in function `claim`, plus a collection of
+# helper functions to give the various operations (retrieving, making,
+# and checking claims) nice names.
+
+# Outside of `claim`, at the very end of the script some more logic
+# has a half-dead (*) leader wipe its own claim to hasten re-election
+# of a new from among the remaining.
+
+# (*) Pod runs, switchboard doesn't.
+
+# - - -- --- ----- -------- ------------- ---------------------
 
 set -o errexit errunset
 
