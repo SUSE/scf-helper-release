@@ -1,0 +1,19 @@
+---
+name: switchboard-leader
+description: Job to host the active/passive probe for mysql switchboard and leader election
+
+templates:
+  readiness-switchboard.sh.erb: bin/readiness/switchboard
+
+packages:
+  - kubectl
+
+properties:
+
+  global-properties.switchboard.service:
+    description: Name of the Kubernetes service to annotate to determine active/passive leader election.
+    default: mysql-proxy-proxy
+
+  global-properties.switchboard.renewal:
+    description: Interval in seconds within which the claim has to be renewed to be kept leader. Should be set to about 1.5 times the readiness probe interval.
+    default: 15
