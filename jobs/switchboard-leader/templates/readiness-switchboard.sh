@@ -1,18 +1,25 @@
 #!/bin/sh
 # Readiness probe script for the mysql-proxy role
 
-K=/var/vcap/packages/kubectl/bin/kubectl
-N="$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)"
-H="${HOSTNAME}"
-S="<%= p('gp.switchboard.service') %>"
-D="<%= p('gp.switchboard.renewal') %>"
-A=skiff-leader
-L=/tmp/log-ready-switchboard
+set -o errexit errunset
 
-# Clear log.
-rm $L
+# Make kubectl available
+PATH="/var/vcap/packages/kubectl/bin:${PATH}"
+export PATH
 
-log () { echo "$@" >> $L ; }
+NAMESPACE="$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)"
+SERVICE="<%= p('gp.switchboard.service') %>"
+RENEWAL="<%= p('gp.switchboard.renewal') %>"
+ANNOTATION=skiff-leader
+LOG_DIR=/var/vcap/sys/log/switchboard-leader
+LOG="${LOG_DIR}/switchboard-leader.log"
+
+# Clear log. We do not accumulate over time, and it will always show
+# only the results from the last call to this script.
+mkdir -p "${LOG_DIR}"
+rm -f "${LOG}"
+
+log () { echo "$@" >> "${LOG}" ; }
 
 now () {
     # timestamp, seconds of the epoch.
@@ -20,41 +27,50 @@ now () {
 }
 
 get_claim () {
-    log retrieval ${N}:${S} :: $A
-    export CLAIM=$($K get service -n $N $S -o "jsonpath={.metadata.annotations.$A}")
+    log retrieval "${NAMESPACE}:${SERVICE}" :: "${ANNOTATION}"
+    # CLAIM is exported for use in `our_claim` and `is_expired`
+    export CLAIM="$(kubectl get service \
+			   --namespace "${NAMESPACE}" "${SERVICE}" \
+			   --output "jsonpath={.metadata.annotations."${ANNOTATION}"}")"
     # CLAIM='claimant:claimtime' -- claimtime unit is [epoch].
-    log claim: $CLAIM
+    log claim: "${CLAIM}"
     test -n "${CLAIM}"
 }
 
 our_claim () {
-    CLAIMANT=$(echo $CLAIM | awk -F: '{ print $1 }')
-    log self? $H :: $CLAIMANT
-    test "${CLAIMANT}" == "${H}"
+    local CLAIMANT="${CLAIM%%:*}"
+    log self? ${HOSTNAME} :: ${CLAIMANT}
+    test "${CLAIMANT}" == "${HOSTNAME}"
 }
 
 is_expired () {
-    CLAIMSEC=$(echo $CLAIM | awk -F: '{ print $2 }')
+    local CLAIMSEC="${CLAIM#*:}"
     NOW="$(now)"
     log expired? $NOW :: $CLAIMSEC
-    test -z "${CLAIMSEC}" || test "$(( ${CLAIMSEC} + $D ))" -lt "$NOW"
+    test "$(( ${CLAIMSEC} + {RENEWAL} ))" -lt "${NOW}"
 }
 
 make_claim () {
-    C=${H}:$(now)
-    log make first claim $C
-    $K annotate service -n $N $S $A=$C >> $L 2>&1
+    local NEWCLAIM="${HOSTNAME}:$(now)"
+    log make first claim $NEWCLAIM
+    kubectl annotate service \
+	    --namespace "${NAMESPACE}" "${SERVICE}" "${ANNOTATION}=${NEWCLAIM}" \
+	    >> "${LOG}" 2>&1
 }
 
 extend_claim () {
-    C=${H}:$(now)
-    log extend claim $C
-    $K annotate --overwrite service -n $N $S $A=$C >> $L 2>&1
+    local NEWCLAIM=${HOSTNAME}:$(now)
+    log extend claim $NEWCLAIM
+    kubectl annotate --overwrite service \
+	    --namespace "${NAMESPACE}" "${SERVICE}" "${ANNOTATION}=${NEWCLAIM}" \
+	    >> "${LOG}" 2>&1
 }
 
 clear_claims() {
     log clear expired claim
-    $K annotate service -n $N $S ${A}- >> $L 2>&1
+    kubectl annotate service \
+	    --namespace "${NAMESPACE}" "${SERVICE}" "${ANNOTATION}-" \
+	    >> "${LOG}" 2>&1
 }
 
 claim () {

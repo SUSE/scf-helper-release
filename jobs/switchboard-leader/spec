@@ -11,9 +11,9 @@ packages:
 properties:
 
   gp.switchboard.service:
-    description: Name of the service to work on for a/p leader election.
+    description: Name of the Kubernetes service to annotate to determine active/passive leader election.
     default: mysql-proxy-proxy
 
   gp.switchboard.renewal:
-    description: Interval in seconds within which the claim has to be renewed to be kept leader.
+    description: Interval in seconds within which the claim has to be renewed to be kept leader. Should be set to about 1.5 times the readiness probe interval.
     default: 15
