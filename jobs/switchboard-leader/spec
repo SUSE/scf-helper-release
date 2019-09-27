@@ -1,9 +1,9 @@
 ---
 name: switchboard-leader
-description: Job to host the a/p probe for mysql switchboard and leader election
+description: Job to host the active/passive probe for mysql switchboard and leader election
 
 templates:
-  readiness-switchboard.sh: bin/readiness/switchboard
+  readiness-switchboard.sh.erb: bin/readiness/switchboard
 
 packages:
   - kubectl
