@@ -4,7 +4,7 @@ set -e
 
 VERSION=v1.15.0
 
-echo Retrieving kubetcl ${VERSION}
+echo Retrieving kubectl ${VERSION}
 
 curl -LO https://storage.googleapis.com/kubernetes-release/release/${VERSION}/bin/linux/amd64/kubectl
 

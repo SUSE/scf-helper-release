@@ -41,8 +41,8 @@ PATH="/var/vcap/packages/kubectl/bin:${PATH}"
 export PATH
 
 NAMESPACE="$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)"
-SERVICE="<%= p('gp.switchboard.service') %>"
-RENEWAL="<%= p('gp.switchboard.renewal') %>"
+SERVICE="<%= p('global-properties.switchboard.service') %>"
+RENEWAL="<%= p('global-properties.switchboard.renewal') %>"
 ANNOTATION=skiff-leader
 LOG_DIR=/var/vcap/sys/log/switchboard-leader
 LOG="${LOG_DIR}/switchboard-leader.log"
