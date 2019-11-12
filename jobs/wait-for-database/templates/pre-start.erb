@@ -71,6 +71,6 @@ detect() {
     bytes="$(head --bytes=1 2>/dev/null <"/dev/tcp/${1}/${2}" | wc --bytes)"
     return $(( 1 - ${bytes} ))
 }
-retry 360 30s detect <%= host %> <%= port %>
+retry 2160 5s detect <%= host %> <%= port %>
 
 exit 0
