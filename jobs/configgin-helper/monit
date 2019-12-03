@@ -1,0 +1,5 @@
+check process configgin-helper
+  with pidfile /var/vcap/sys/run/configgin-helper/configgin-helper.pid
+  start program "/var/vcap/jobs/configgin-helper/bin/configgin-helper start"
+  stop program "/var/vcap/jobs/configgin-helper/bin/configgin-helper stop"
+  group root

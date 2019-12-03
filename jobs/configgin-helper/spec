@@ -1,0 +1,16 @@
+---
+name: configgin-helper
+
+description: Copy configgin service account token to secret
+
+packages:
+- kubectl
+- pid_utils
+
+templates:
+  configgin-helper.erb: bin/configgin-helper
+
+properties:
+  token_refresh_interval:
+    description: "Number of minutes to wait between refreshing the service account token"
+    default: 5

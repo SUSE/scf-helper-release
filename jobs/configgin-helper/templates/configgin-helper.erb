@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -x
+set -e
+
+source /var/vcap/packages/pid_utils/pid_utils.sh
+
+kubectl=/var/vcap/packages/kubectl/bin/kubectl
+export KUBERNETES_SERVICE_HOST=<%= ENV["KUBERNETES_SERVICE_HOST"] %>
+export KUBERNETES_SERVICE_PORT=<%= ENV["KUBERNETES_SERVICE_PORT"] %>
+
+PIDFILE=/var/vcap/sys/run/configgin-helper/configgin-helper.pid
+
+case $1 in
+    start)
+        mkdir -p /var/vcap/sys/run/configgin-helper
+        pid_guard ${PIDFILE} "configgin-helper"
+
+        ${BASH_SOURCE} run &
+        echo $! > ${PIDFILE}
+        ;;
+
+    stop)
+        kill_and_wait ${PIDFILE}
+        ;;
+
+    run)
+        while true; do
+            ${kubectl} apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: configgin
+  namespace: <%= ENV["KUBERNETES_NAMESPACE"] %>
+data:
+  token: $(base64 -w 0 /var/run/secrets/kubernetes.io/serviceaccount/token)
+EOF
+            sleep <%= p("token_refresh_interval").to_i * 60 %>
+        done
+        ;;
+
+    *)
+        echo "Usage: configgin-helper {start|stop|run}"
+        ;;
+esac
