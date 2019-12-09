@@ -35,26 +35,8 @@ func mysqlCreator(db *sql.DB, seedConfig SeedConfig) (err error) {
 		return err
 	}
 
-	// Create the user, or set the password if it already exists
-	result, err := exec("CREATE USER IF NOT EXISTS `%s` IDENTIFIED BY '%s'",
-		seedConfig.Username, seedConfig.Password)
-	if err != nil {
-		return err
-	}
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rows < 1 {
-		_, err := exec("ALTER USER `%s` IDENTIFIED BY '%s'",
-			seedConfig.Username, seedConfig.Password)
-		if err != nil {
-			return err
-		}
-	}
-
-	// Grant privileges
-	_, err = exec("GRANT ALL ON `%s`.* TO `%s`@`%%`", seedConfig.Name, seedConfig.Username)
+	// Grant privileges (implicitly creates or updates credentials as needed)
+	_, err = exec("GRANT ALL ON `%s`.* TO `%s`@`%%` IDENTIFIED BY '%s'", seedConfig.Name, seedConfig.Username, seedConfig.Password)
 	if err != nil {
 		return err
 	}
