@@ -80,7 +80,7 @@ is_expired () {
     local CLAIMSEC="${CLAIM#*:}"
     NOW="$(now)"
     log expired? $NOW :: $CLAIMSEC
-    test "$(( ${CLAIMSEC} + {RENEWAL} ))" -lt "${NOW}"
+    test "$(( ${CLAIMSEC} + ${RENEWAL} ))" -lt "${NOW}"
 }
 
 make_claim () {
