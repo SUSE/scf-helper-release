@@ -1,7 +1,7 @@
 ---
 name: generate-secrets
 dependencies:
-- golang1.11.1
+- golang1.13.5
 
 files:
 - github.com/SUSE/scf-secret-generator/**/*
