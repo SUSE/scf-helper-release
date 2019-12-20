@@ -1,0 +1,94 @@
+name: scf-helper
+version: 1.0.11
+commit_hash: d2da5db
+uncommitted_changes: false
+jobs:
+- name: configgin-helper
+  version: 9435a619bde6242bfcdd1a6d4d43479155348bcbe510c47f9582ab65b02e5466
+  fingerprint: 9435a619bde6242bfcdd1a6d4d43479155348bcbe510c47f9582ab65b02e5466
+  sha1: sha256:c618d0ebf20ce8d20c3226c1187926b7d46d28f33400e523cd117c76a8777310
+  packages:
+  - kubectl
+  - pid_utils
+- name: database-seeder
+  version: c6ea891c3c08c357ee899f4c9421b555e3936576b4b1067e6dd65d2d2134f035
+  fingerprint: c6ea891c3c08c357ee899f4c9421b555e3936576b4b1067e6dd65d2d2134f035
+  sha1: sha256:b7dd15512e31032af1aec7e41d08a05fdf74af677101befa3113379d96e100b6
+  packages:
+  - database-seeder
+- name: generate-secrets
+  version: ecbdf1242936b74ebff4ebcd848ab56a0d5f09d64af8dcec19eed730c5b73d20
+  fingerprint: ecbdf1242936b74ebff4ebcd848ab56a0d5f09d64af8dcec19eed730c5b73d20
+  sha1: sha256:ba471b55f070168b56b51ac3ebd6ab3901fc76ae0bcc4146060153ec122c4ff9
+  packages:
+  - generate-secrets
+- name: global-properties
+  version: 8fd4843cbffb637f30e8454c932893e4a03fd99d9f4b6f38779fa8e83508f8c5
+  fingerprint: 8fd4843cbffb637f30e8454c932893e4a03fd99d9f4b6f38779fa8e83508f8c5
+  sha1: sha256:a23041029b2389c90a2ea6e67f9dd8790c21c1c5b2f7b5e1014e78302064ed32
+  packages: []
+- name: global-uaa-properties
+  version: 8b0e9b79925bf98438fea8853e62d781a226a14db835dbee00c1cd0c6bbb7917
+  fingerprint: 8b0e9b79925bf98438fea8853e62d781a226a14db835dbee00c1cd0c6bbb7917
+  sha1: sha256:be3dd5fd8e41361b2a2af43e89cb0b7dbb1ad706d47c14477145c302654295d1
+  packages: []
+- name: patch-properties
+  version: 61c6024993a2813b5dd86566d563523d9a6396acea88add46a97981003c25d36
+  fingerprint: 61c6024993a2813b5dd86566d563523d9a6396acea88add46a97981003c25d36
+  sha1: sha256:5bebf7baa7a8be29f86746fe55a4a809040edcd0e6850b54ea3aa003ff2e3a43
+  packages: []
+- name: switchboard-leader
+  version: 44772d86ca6bd6d9a32d3dfa48a7ea745a9387e0e0f8403f0903922d1c1e5ff0
+  fingerprint: 44772d86ca6bd6d9a32d3dfa48a7ea745a9387e0e0f8403f0903922d1c1e5ff0
+  sha1: sha256:e01e75d4b747d68fe46ffc94277be723282578d1840658859fa67e1ced250c82
+  packages:
+  - kubectl
+- name: wait-for-database
+  version: 99dc4f7cc3bae30e1e0630bb5e97c79e8d3aa157cee1c475b6d4c869cfeb5cda
+  fingerprint: 99dc4f7cc3bae30e1e0630bb5e97c79e8d3aa157cee1c475b6d4c869cfeb5cda
+  sha1: sha256:1a927d5ca9adcfa737554e068281f584812db42152f118c0ccfd27583035fa0b
+  packages: []
+packages:
+- name: database-seeder
+  version: 6952399554f9fc10842c044e9719ffb1b06513cb81ef53ed68842b2722b3d62a
+  fingerprint: 6952399554f9fc10842c044e9719ffb1b06513cb81ef53ed68842b2722b3d62a
+  sha1: sha256:0f689b8bccca2a3d75b5c97197990981627369fb8ac477ae2281ebbe5a661606
+  dependencies:
+  - golang1.12
+  - git
+- name: generate-secrets
+  version: 5526a6ab920ff2bd5be4083e5cbb8677b117972f59b6c776deff4948dc89c22d
+  fingerprint: 5526a6ab920ff2bd5be4083e5cbb8677b117972f59b6c776deff4948dc89c22d
+  sha1: sha256:50cdaad3c8be861dab11e76224b8c61561e51d7d15aa0d4302ad0103b1ef8a06
+  dependencies:
+  - golang1.11.1
+- name: git
+  version: ee2e0e07b24ce63a1a73967467772db8a98fb0ce13c0e96802d51462f07f090c
+  fingerprint: ee2e0e07b24ce63a1a73967467772db8a98fb0ce13c0e96802d51462f07f090c
+  sha1: sha256:88a7507409cad29649551ac1039f4e70d79f35f6401e887ae08e69e3ca0c1f54
+  dependencies: []
+- name: golang1.11.1
+  version: 7732c582917237d27151a5c99d75351dcd8f8c9cc9408fcf95f3584ed62a1423
+  fingerprint: 7732c582917237d27151a5c99d75351dcd8f8c9cc9408fcf95f3584ed62a1423
+  sha1: sha256:8410eb8bdafde432cd42a948885044095669c74c40de35e952691256d4012051
+  dependencies: []
+- name: golang1.12
+  version: 3eed6df5c01b3983f59c65df5d3e740be4204530ed600507de2e6dd61215e8d3
+  fingerprint: 3eed6df5c01b3983f59c65df5d3e740be4204530ed600507de2e6dd61215e8d3
+  sha1: sha256:66e87cde0f6449c0fc2c88d05b67b1d1de49dc8a8d25dc98c9a4b932cd2c8c2a
+  dependencies:
+  - golang1.11.1
+- name: kubectl
+  version: 134c6acbe8386e78158a4925be827ec15d716ec9eb5089035e24cb94eda1d288
+  fingerprint: 134c6acbe8386e78158a4925be827ec15d716ec9eb5089035e24cb94eda1d288
+  sha1: sha256:016799a711b5b919237f5726eaf92a5501facd7803db738d14cb7ca8c2b6ae1f
+  dependencies: []
+- name: pid_utils
+  version: b7495b5514d5375d2e7a8ff9ea54975ffb3cd23392df0607c385d692edb3da89
+  fingerprint: b7495b5514d5375d2e7a8ff9ea54975ffb3cd23392df0607c385d692edb3da89
+  sha1: sha256:0b0d403bd3c5ea40cb168a85cf333438900e76220ced99c8b06844e2b90c8857
+  dependencies: []
+license:
+  version: a1027b2d777510b701ae31575278dd55e0ccac5cf70e737b7ba7058235febbe0
+  fingerprint: a1027b2d777510b701ae31575278dd55e0ccac5cf70e737b7ba7058235febbe0
+  sha1: sha256:bcab94e699cf350cb6891bafc419cc98e565921571afec0b6c396ecff6e77f21
