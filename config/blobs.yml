@@ -7,14 +7,10 @@ cli/cf-cli_6.33.1_linux_x86-64.tgz:
   object_id: cf-cli_6.33.1_linux_x86-64.tgz
   sha: 36d599d1e540c94f31740f6fac49adbf032a22a3
   size: 6223742
-golang/go1.11.1.linux-amd64.tar.gz:
-  size: 127205934
-  object_id: go1.11.1.linux-amd64.tar.gz
-  sha: 6446c7d8ef096c5ca6088ec87b46bf4c120f62b0
-golang/go1.12.9.src.tar.gz:
-  size: 21979950
-  object_id: go1.12.9.src.tar.gz
-  sha: sha256:ab0e56ed9c4732a653ed22e232652709afbf573e710f56a07f7fdeca578d62fc
+golang/go1.13.5.linux-amd64.tar.gz:
+  size: 120074076
+  object_id: go1.13.5.linux-amd64.tar.gz
+  sha: sha256:512103d7ad296467814a6e3f635631bd35574cab3369a97a323c9a585ccaa569
 ruby-2.3/bundler-1.11.2.gem:
   object_id: bundler-1.11.2.gem
   sha: 8eb956dec72da753d3d2a2126c78508b17af434e
