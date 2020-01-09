@@ -23,4 +23,6 @@ builds:
     version: 1.0.10
   c2825a8c-f56b-4607-5368-b1bba4ce5ca8:
     version: 1.0.3
+  cc413bdc-5465-42a2-5716-511910cd0dd5:
+    version: 1.0.13
 format-version: "2"
