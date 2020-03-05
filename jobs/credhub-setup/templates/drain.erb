@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -o errexit -o nounset -o xtrace
+
+export PATH="${PATH}:$(echo /var/vcap/packages/cf-cli-*-linux/bin)"
+
+# TODO: use cc('public_tls.ca_cert') somehow
+cf api --skip-ssl-validation "${CF_API}"
+
+cf auth --client-credentials
+
+sec_group_name="internal-${POD_NAME}"
+
+cf delete-security-group -f "${sec_group_name}"

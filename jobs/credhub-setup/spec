@@ -1,0 +1,30 @@
+---
+name: credhub-setup
+description: Sets up the application security groups required for CredHub
+
+templates:
+  bpm.yml.erb:    config/bpm.yml
+  post-start.erb: bin/post-start
+  drain.erb:      bin/drain
+
+packages:
+- cf-cli-6-linux
+
+consumes:
+- name: credhub
+  type: credhub
+- name: cloud_controller_https_endpoint
+  type: cloud_controller_https_endpoint
+
+properties:
+  credhub_setup.oauth_client:
+    description: The oauth client to use for UAA authorization
+    default: credhub_setup_client
+  credhub_setup.oauth_secret:
+    description: The oauth client secret to use for UAA authorization
+  uaa.internal_host:
+    description: The hostname UAA is listening on internally
+    default: uaa.service.cf.internal
+  uaa.ssl.port:
+    description: The port UAA is listening on internally
+    default: 8443

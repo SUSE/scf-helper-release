@@ -1,0 +1,8 @@
+processes:
+- name: credhub-setup
+  executable: /usr/bin/tail
+  args:
+  - --pid
+  - 1
+  - --follow
+  - /dev/null
