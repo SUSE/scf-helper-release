@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+PATH="${PATH}:$(echo /var/vcap/packages/go*/bin)"
+export PATH
+env
+cd credhub_setup
+ls -l $PWD
+go build -o credhub_setup ./cmd
+mv credhub_setup "${BOSH_INSTALL_TARGET}/"

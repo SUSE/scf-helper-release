@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+trap /var/vcap/jobs/credhub-setup/bin/drain EXIT
+/usr/bin/tail --pid $$ --follow /dev/null
