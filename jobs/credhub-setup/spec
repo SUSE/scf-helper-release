@@ -27,6 +27,9 @@ properties:
     default: credhub_setup_client
   credhub_setup.oauth_secret:
     description: OAuth client secret to use for UAA authorization.
+  credhub_setup.use_drain:
+    description: Use the BOSH drain script (debugging only)
+    default: true
   uaa.ca_cert:
     description: CA certificate used to verify the UAA SSL connection.
     example: |
