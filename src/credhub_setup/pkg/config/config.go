@@ -72,43 +72,41 @@ func Load(lookupFunc func(string) (string, bool)) (Config, error) {
 }
 
 // collectHelp recusively inspects a type for help information, and returns the
-// environment variables and their help text, plus the maximum length of each.
-func collectHelp(t reflect.Type) ([]string, int, []string, int) {
-	var nameLength, helpTextLength int
+// environment variables and their help text.
+func collectHelp(t reflect.Type) ([]string, []string) {
 	var names, helpTexts []string
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
-		if field.Anonymous {
-			innerNames, innerNameLength, innerHelpTexts, innerHelpTextLength := collectHelp(field.Type)
+		switch field.Type.Kind() {
+		case reflect.Struct:
+			innerNames, innerHelpTexts := collectHelp(field.Type)
 			names = append(names, innerNames...)
-			if innerNameLength > nameLength {
-				nameLength = innerNameLength
-			}
 			helpTexts = append(helpTexts, innerHelpTexts...)
-			if innerHelpTextLength > helpTextLength {
-				helpTextLength = innerHelpTextLength
-			}
-			continue
-		}
-		name := field.Tag.Get("env")
-		names = append(names, name)
-		if len(name) > nameLength {
-			nameLength = len(name)
-		}
-		helpText := field.Tag.Get("helpText")
-		helpTexts = append(helpTexts, helpText)
-		if len(helpText) > helpTextLength {
-			helpTextLength = len(helpText)
+		default:
+			names = append(names, field.Tag.Get("env"))
+			helpTexts = append(helpTexts, field.Tag.Get("helpText"))
 		}
 	}
-	return names, nameLength, helpTexts, helpTextLength
+	return names, helpTexts
+}
+
+func maxStringLength(inputs []string) int {
+	maxLength := 0
+	for _, input := range inputs {
+		if len(input) > maxLength {
+			maxLength = len(input)
+		}
+	}
+	return maxLength
 }
 
 func ShowHelp(l logger.Logger) {
 	l.Logf("%s <post-start|drain>\n", os.Args[0])
 	l.Logf("\n")
 	l.Logf("Required evnironment variables:\n")
-	names, nameLength, helpTexts, helpTextLength := collectHelp(reflect.TypeOf(Config{}))
+	names, helpTexts := collectHelp(reflect.TypeOf(Config{}))
+	nameLength := maxStringLength(names)
+	helpTextLength := maxStringLength(helpTexts)
 	for i := 0; i < len(names); i++ {
 		l.Logf("    %-*s    %-*s\n",
 			nameLength, names[i],

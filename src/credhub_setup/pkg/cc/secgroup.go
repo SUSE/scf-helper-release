@@ -65,6 +65,7 @@ type SecurityGroupBuilder struct {
 	Address  string
 	Ports    string
 
+	groupNameCache           string
 	groupIDOverride          *string
 	makeSecurityGroupRequest secGroupRequester
 }
@@ -151,7 +152,10 @@ func (b *SecurityGroupBuilder) resolvePath(path string, params ...interface{}) *
 
 // groupName returns the name of the security group to set or unset.
 func (b *SecurityGroupBuilder) groupName() string {
-	return fmt.Sprintf("credhub-internal-%s", b.Name)
+	if b.groupNameCache == "" {
+		b.groupNameCache = fmt.Sprintf("credhub-internal-%s", b.Name)
+	}
+	return b.groupNameCache
 }
 
 // defaultRequester makes a HTTP request to create/update/query the application
