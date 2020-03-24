@@ -1,30 +1,30 @@
 package httpclient
 
 import (
-	"bytes"
 	"context"
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"sync"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"credhub_setup/pkg/quarks"
 )
 
 func TestMakeHTTPClientWithCA(t *testing.T) {
 	t.Parallel()
 
-	ctx := context.WithValue(context.Background(), quarks.ResolverSkipBOSHDNS, struct{}{})
+	ctx := context.Background()
 
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "ok")
@@ -48,15 +48,21 @@ func TestMakeHTTPClientWithCA(t *testing.T) {
 		defer wg.Done()
 		t.Parallel()
 
-		certBytes := bytes.Buffer{}
-		pem.Encode(&certBytes, &pem.Block{
+		certFile, err := ioutil.TempFile("", "credhub-setup-ca-*.crt")
+		require.NoError(t, err, "failed to create temporary CA certificate")
+		defer os.Remove(certFile.Name())
+		err = pem.Encode(certFile, &pem.Block{
 			Type:  "CERTIFICATE",
 			Bytes: server.Certificate().Raw,
 		})
+		require.NoError(t, err, "failed to write temporary CA certificate")
+		err = certFile.Close()
+		require.NoError(t, err, "failed to close temporary CA certificate")
+
 		client, err := MakeHTTPClientWithCA(
 			ctx,
 			serverURL.Hostname(),
-			certBytes.Bytes())
+			certFile.Name())
 		require.NoError(t, err, "failed to make HTTP client")
 
 		resp, err := client.Get(server.URL)
@@ -65,21 +71,44 @@ func TestMakeHTTPClientWithCA(t *testing.T) {
 		require.Less(t, resp.StatusCode, 300, "unexpected status: %s", resp.Status)
 	})
 
+	t.Run("missing certificate", func(t *testing.T) {
+		wg.Add(1)
+		defer wg.Done()
+		t.Parallel()
+
+		certFile, err := ioutil.TempFile("", "credhub-setup-ca-*.crt")
+		require.NoError(t, err, "failed to create temporary CA certificate")
+		err = os.Remove(certFile.Name())
+		assert.NoError(t, err, "failed to remove temporary CA certificate")
+
+		_, err = MakeHTTPClientWithCA(
+			ctx,
+			serverURL.Hostname(),
+			certFile.Name())
+		assert.Error(t, err, "got HTTP client with missing CA certificate")
+	})
+
 	t.Run("invalid certificate", func(t *testing.T) {
 		wg.Add(1)
 		defer wg.Done()
 		t.Parallel()
 
-		certBytes := bytes.Buffer{}
-		pem.Encode(&certBytes, &pem.Block{
+		certFile, err := ioutil.TempFile("", "credhub-setup-ca-*.crt")
+		require.NoError(t, err, "failed to create temporary CA certificate")
+		defer os.Remove(certFile.Name())
+		err = pem.Encode(certFile, &pem.Block{
 			Type:  "CERTIFICATE",
 			Bytes: []byte("This is an invalid certificate"),
 		})
-		_, err := MakeHTTPClientWithCA(
+		require.NoError(t, err, "failed to write temporary CA certificate")
+		err = certFile.Close()
+		require.NoError(t, err, "failed to close temporary CA certificate")
+
+		_, err = MakeHTTPClientWithCA(
 			ctx,
 			serverURL.Hostname(),
-			certBytes.Bytes())
-		require.Error(t, err, "got HTTP client with invalid CA certificate")
+			certFile.Name())
+		assert.Error(t, err, "got HTTP client with invalid CA certificate")
 	})
 
 	t.Run("incorrect certificate", func(t *testing.T) {
@@ -98,15 +127,21 @@ func TestMakeHTTPClientWithCA(t *testing.T) {
 		cert, err := x509.CreateCertificate(rand.Reader, certTemplate, certTemplate, pubKey, privKey)
 		require.NoError(t, err, "could not create certificate")
 
-		certBytes := bytes.Buffer{}
-		pem.Encode(&certBytes, &pem.Block{
+		certFile, err := ioutil.TempFile("", "credhub-setup-ca-*.crt")
+		require.NoError(t, err, "failed to create temporary CA certificate")
+		defer os.Remove(certFile.Name())
+		err = pem.Encode(certFile, &pem.Block{
 			Type:  "CERTIFICATE",
 			Bytes: cert,
 		})
+		require.NoError(t, err, "failed to write temporary CA certificate")
+		err = certFile.Close()
+		require.NoError(t, err, "failed to close temporary CA certificate")
+
 		client, err := MakeHTTPClientWithCA(
 			ctx,
 			serverURL.Hostname(),
-			certBytes.Bytes())
+			certFile.Name())
 		require.NoError(t, err, "could not create HTTP client with incorrect CA certificate")
 		require.NotNil(t, client, "did not create HTTP client even though no errors reported")
 		_, err = client.Get(server.URL)
