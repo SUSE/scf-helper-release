@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"time"
 
 	"credhub_setup/pkg/cc"
 	"credhub_setup/pkg/config"
@@ -28,14 +27,9 @@ const (
 	processModeRemove processMode = iota
 )
 
-func process(ctx context.Context, l logger.Logger, mode processMode) error {
+func process(ctx context.Context, config config.Config, l logger.Logger, mode processMode) error {
 	ctx, cancelFunc := context.WithCancel(ctx)
 	defer cancelFunc()
-
-	config, err := config.Load(os.LookupEnv)
-	if err != nil {
-		return err
-	}
 
 	tokenURL, err := url.Parse(config.UAATokenURL)
 	if err != nil {
@@ -62,7 +56,7 @@ func process(ctx context.Context, l logger.Logger, mode processMode) error {
 	waiter := quarks.HostWaiter{
 		Logger:       l,
 		HostLookuper: net.DefaultResolver.LookupHost,
-		Duration:     10 * time.Second,
+		Duration:     config.WaitDuration,
 	}
 	for _, hostname := range []string{tokenURL.Hostname(), ccURL.Hostname()} {
 		if err := waiter.WaitForHost(ctx, hostname); err != nil {
@@ -112,15 +106,22 @@ func main() {
 		config.ShowHelp(l)
 		return
 	}
+
+	parsedConfig, err := config.Load(os.LookupEnv)
+	if err != nil {
+		l.Logf("Error: %v\n", err)
+		os.Exit(1)
+	}
+
 	switch v := filepath.Base(os.Args[1]); v {
 	case "post-start":
-		err := process(ctx, l, processModeApply)
+		err := process(ctx, parsedConfig, l, processModeApply)
 		if err != nil {
 			l.Logf("Error: %v\n", err)
 			os.Exit(1)
 		}
 	case "drain":
-		err := process(ctx, l, processModeRemove)
+		err := process(ctx, parsedConfig, l, processModeRemove)
 		if err != nil {
 			l.Logf("Error: %v\n", err)
 			os.Exit(1)

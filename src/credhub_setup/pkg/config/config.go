@@ -5,6 +5,7 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"time"
 
 	"credhub_setup/pkg/logger"
 )
@@ -30,6 +31,7 @@ type CC struct {
 type Config struct {
 	UAA
 	CC
+	WaitDuration time.Duration
 }
 
 // collectConfig examines the passed-in value (which must be a Struct) and
@@ -63,7 +65,9 @@ func collectConfig(value reflect.Value, lookupFunc func(string) (string, bool)) 
 				missingEnvs = append(missingEnvs, envName)
 			}
 		default:
-			panic(fmt.Errorf("invalid field %s: not a string", field.Name))
+			if _, ok := field.Tag.Lookup("env"); ok {
+				panic(fmt.Errorf("invalid field %s: not a string", field.Name))
+			}
 		}
 	}
 	return missingEnvs
@@ -72,7 +76,7 @@ func collectConfig(value reflect.Value, lookupFunc func(string) (string, bool)) 
 // Load returns a populated Config with the appropriate configuration options,
 // where each item is fetched via the given lookupFunc.
 func Load(lookupFunc func(string) (string, bool)) (Config, error) {
-	c := Config{}
+	c := Config{WaitDuration: 10 * time.Second}
 	missingEnvs := collectConfig(reflect.ValueOf(&c), lookupFunc)
 
 	if len(missingEnvs) > 0 {

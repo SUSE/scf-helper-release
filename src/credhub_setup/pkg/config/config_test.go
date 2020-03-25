@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -104,6 +105,7 @@ func TestLoad(t *testing.T) {
 				PodIP:    "POD_IP",
 				Ports:    "PORTS",
 			},
+			WaitDuration: 10 * time.Second,
 		}
 		lookup := func(key string) (string, bool) {
 			return key, true
