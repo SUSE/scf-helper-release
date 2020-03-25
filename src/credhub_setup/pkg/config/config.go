@@ -26,42 +26,54 @@ type CC struct {
 	Ports    string `env:"PORTS"      helpText:"Ports to expose in the security group"`
 }
 
-// Resolver contains DNS resolver-related configuration options.
-type Resolver struct {
-	DNSServer string `env:"DNS_SERVER"         helpText:"DNS server to use to look up KubeCF hosts"`
-}
-
 // Config is a union of all the configuration options available.
 type Config struct {
 	UAA
 	CC
-	Resolver
+}
+
+// collectConfig examines the passed-in value (which must be a Struct) and
+// populates it with the appropriate configuration options, where each item is
+// fetched via the given lookupFunc.  It returns the names of the fields that
+// were not set.
+func collectConfig(value reflect.Value, lookupFunc func(string) (string, bool)) []string {
+	// Dereference value if it's a pointer (i.e. the top level)
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
+	// Get the value's type, so we can examine its field tags.
+	typ := value.Type()
+	if typ.Kind() != reflect.Struct {
+		panic(fmt.Errorf("unexpected value type %v", typ.Kind()))
+	}
+	var missingEnvs []string
+	for index := 0; index < typ.NumField(); index++ {
+		child := value.Field(index)
+		field := typ.Field(index)
+		switch field.Type.Kind() {
+		case reflect.Struct:
+			innerMissingEnvs := collectConfig(child, lookupFunc)
+			missingEnvs = append(missingEnvs, innerMissingEnvs...)
+		case reflect.String:
+			envName := field.Tag.Get("env")
+			envValue, ok := lookupFunc(envName)
+			if ok {
+				child.SetString(envValue)
+			} else {
+				missingEnvs = append(missingEnvs, envName)
+			}
+		default:
+			panic(fmt.Errorf("invalid field %s: not a string", field.Name))
+		}
+	}
+	return missingEnvs
 }
 
 // Load returns a populated Config with the appropriate configuration options,
 // where each item is fetched via the given lookupFunc.
 func Load(lookupFunc func(string) (string, bool)) (Config, error) {
-	var missingEnvs []string
 	c := Config{}
-	topValue := reflect.ValueOf(&c)
-	topType := topValue.Type().Elem()
-	for topIndex := 0; topIndex < topType.NumField(); topIndex++ {
-		topField := topType.Field(topIndex)
-		if !topField.Anonymous {
-			panic(fmt.Sprintf("Config struct has top level non-anonymous field %s", topField.Name))
-		}
-		innerType := topField.Type
-		for innerIndex := 0; innerIndex < innerType.NumField(); innerIndex++ {
-			innerField := innerType.Field(innerIndex)
-			envName := innerField.Tag.Get("env")
-			envValue, ok := lookupFunc(envName)
-			if !ok {
-				missingEnvs = append(missingEnvs, envName)
-				continue
-			}
-			topValue.Elem().Field(topIndex).Field(innerIndex).SetString(envValue)
-		}
-	}
+	missingEnvs := collectConfig(reflect.ValueOf(&c), lookupFunc)
 
 	if len(missingEnvs) > 0 {
 		sort.Strings(missingEnvs)

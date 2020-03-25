@@ -13,6 +13,55 @@ import (
 	"credhub_setup/pkg/logger"
 )
 
+func TestCollectConfig(t *testing.T) {
+	lookupFunc := func(key string) (string, bool) {
+		switch key {
+		case "key":
+			return "value", true
+		case "missing":
+			return "", false
+		default:
+			t.Logf("got unexpected key %s", key)
+			t.Fail()
+			return "", false
+		}
+	}
+	t.Run("simple struct", func(t *testing.T) {
+		var config struct {
+			Field   string `env:"key"`
+			Missing string `env:"missing"`
+		}
+		missing := collectConfig(reflect.ValueOf(&config), lookupFunc)
+		assert.Equal(t, []string{"missing"}, missing, "incorrect missing envs")
+		assert.Equal(t, "value", config.Field, "value was not set")
+	})
+	t.Run("nested struct", func(t *testing.T) {
+		var config struct {
+			Nested struct {
+				Field   string `env:"key"`
+				Missing string `env:"missing"`
+			}
+		}
+		missing := collectConfig(reflect.ValueOf(&config), lookupFunc)
+		assert.Equal(t, []string{"missing"}, missing, "incorrect missing envs")
+		assert.Equal(t, "value", config.Nested.Field, "value was not set")
+	})
+	t.Run("invalid type", func(t *testing.T) {
+		var config struct {
+			Field int `env:"key"`
+		}
+		assert.PanicsWithError(t, "invalid field Field: not a string", func() {
+			_ = collectConfig(reflect.ValueOf(&config), lookupFunc)
+		}, "expecting incorrect field types to panic")
+	})
+	t.Run("invalid input", func(t *testing.T) {
+		config := 3
+		assert.PanicsWithError(t, "unexpected value type int", func() {
+			_ = collectConfig(reflect.ValueOf(&config), lookupFunc)
+		})
+	})
+}
+
 func TestLoad(t *testing.T) {
 	t.Run("with missing entries", func(t *testing.T) {
 		var missingEnvs []string
@@ -46,9 +95,6 @@ func TestLoad(t *testing.T) {
 				Name:     "POD_NAME",
 				PodIP:    "POD_IP",
 				Ports:    "PORTS",
-			},
-			Resolver: Resolver{
-				DNSServer: "DNS_SERVER",
 			},
 		}
 		lookup := func(key string) (string, bool) {
