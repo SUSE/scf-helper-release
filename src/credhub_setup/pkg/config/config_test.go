@@ -14,6 +14,7 @@ import (
 )
 
 func TestCollectConfig(t *testing.T) {
+	t.Parallel()
 	lookupFunc := func(key string) (string, bool) {
 		switch key {
 		case "key":
@@ -27,6 +28,7 @@ func TestCollectConfig(t *testing.T) {
 		}
 	}
 	t.Run("simple struct", func(t *testing.T) {
+		t.Parallel()
 		var config struct {
 			Field   string `env:"key"`
 			Missing string `env:"missing"`
@@ -36,6 +38,7 @@ func TestCollectConfig(t *testing.T) {
 		assert.Equal(t, "value", config.Field, "value was not set")
 	})
 	t.Run("nested struct", func(t *testing.T) {
+		t.Parallel()
 		var config struct {
 			Nested struct {
 				Field   string `env:"key"`
@@ -47,6 +50,7 @@ func TestCollectConfig(t *testing.T) {
 		assert.Equal(t, "value", config.Nested.Field, "value was not set")
 	})
 	t.Run("invalid type", func(t *testing.T) {
+		t.Parallel()
 		var config struct {
 			Field int `env:"key"`
 		}
@@ -55,6 +59,7 @@ func TestCollectConfig(t *testing.T) {
 		}, "expecting incorrect field types to panic")
 	})
 	t.Run("invalid input", func(t *testing.T) {
+		t.Parallel()
 		config := 3
 		assert.PanicsWithError(t, "unexpected value type int", func() {
 			_ = collectConfig(reflect.ValueOf(&config), lookupFunc)
@@ -63,7 +68,9 @@ func TestCollectConfig(t *testing.T) {
 }
 
 func TestLoad(t *testing.T) {
+	t.Parallel()
 	t.Run("with missing entries", func(t *testing.T) {
+		t.Parallel()
 		var missingEnvs []string
 		lookup := func(key string) (string, bool) {
 			// If the string is even length, pretend it's unset.
@@ -82,6 +89,7 @@ func TestLoad(t *testing.T) {
 	})
 
 	t.Run("with all variables given", func(t *testing.T) {
+		t.Parallel()
 		expected := Config{
 			UAA: UAA{
 				OAuthClient: "OAUTH_CLIENT",
@@ -107,6 +115,7 @@ func TestLoad(t *testing.T) {
 }
 
 func TestCollectHelp(t *testing.T) {
+	t.Parallel()
 	// collectHelp doesn't actually hard code a type, so we can test it with a
 	// custom one.
 	var dummy struct {
@@ -123,6 +132,7 @@ func TestCollectHelp(t *testing.T) {
 }
 
 func TestMaxStringLength(t *testing.T) {
+	t.Parallel()
 	assert.Equal(t, 0, maxStringLength([]string{}))
 	assert.Equal(t, 5, maxStringLength([]string{"hello"}))
 	assert.Equal(t, 8, maxStringLength([]string{"multiple", "strings"}))
@@ -130,6 +140,7 @@ func TestMaxStringLength(t *testing.T) {
 }
 
 func TestShowHelp(t *testing.T) {
+	t.Parallel()
 	builder := strings.Builder{}
 	baseLogger := log.New(&builder, "", 0)
 	adapter := logger.NewAdapter(baseLogger)

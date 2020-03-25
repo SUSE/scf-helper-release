@@ -7,9 +7,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"net/url"
 	"os"
 	"path/filepath"
+	"time"
 
 	"credhub_setup/pkg/cc"
 	"credhub_setup/pkg/config"
@@ -57,11 +59,15 @@ func process(ctx context.Context, l logger.Logger, mode processMode) error {
 		return err
 	}
 
-	if err := quarks.WaitForHost(tokenURL.Hostname(), l); err != nil {
-		return err
+	waiter := quarks.HostWaiter{
+		Logger:       l,
+		HostLookuper: net.DefaultResolver.LookupHost,
+		Duration:     10 * time.Second,
 	}
-	if err := quarks.WaitForHost(ccURL.Hostname(), l); err != nil {
-		return err
+	for _, hostname := range []string{tokenURL.Hostname(), ccURL.Hostname()} {
+		if err := waiter.WaitForHost(ctx, hostname); err != nil {
+			return err
+		}
 	}
 
 	client, err := uaa.Authenticate(
