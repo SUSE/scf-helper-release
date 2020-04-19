@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -o errexit -o nounset
+
+<%
+require 'shellwords'
+
+cc = link('cloud_controller_https_endpoint')
+Hash(
+    OAUTH_CLIENT: p('credhub_setup.oauth_client'),
+    OAUTH_SECRET: p('credhub_setup.oauth_secret'),
+    UAA_TOKEN_URL: "https://#{p('uaa.internal_host')}:#{p('uaa.ssl.port')}/oauth/token",
+    UAA_CA_CERT: '/var/vcap/jobs/credhub-setup/uaa-ca.crt',
+    CC_URL: "https://#{cc.p('cc.internal_service_hostname')}:#{cc.p('cc.public_tls.port')}",
+    CC_CA_CERT: '/var/vcap/jobs/credhub-setup/cc-ca.crt',
+    PORTS: p('credhub_setup.ports').to_s,
+).each_pair do |k, v|
+    fail "#{k} not set" if v.nil?
+    %>
+    <%= k %>=<%= v.shellescape %>
+    export <%= k %>
+    <%
+end
+%>
+
+exec /var/vcap/packages/credhub_setup/credhub_setup $0

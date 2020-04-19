@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+<% unless p('credhub_setup.use_drain') %>
+trap /var/vcap/jobs/credhub-setup/bin/drain EXIT
+<% end %>
+/usr/bin/tail --pid $$ --follow /dev/null

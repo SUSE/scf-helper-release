@@ -1,0 +1,8 @@
+---
+name: credhub_setup
+
+dependencies:
+- golang1.13.5
+
+files:
+- credhub_setup/**
